@@ -85,6 +85,17 @@ aria-controls="nbMain" aria-label="Toggle navigation"><span class="navbar-toggle
 <div class="progress-stacked overlay">
 <div class="progress" role="progressbar" id="pb-overlay-used"><div class="progress-bar"></div></div>
 </div>
+<%
+# Function to get the WiFi signal strength
+get_signal_strength() {
+    local interface=$1
+    iwconfig $interface 2>/dev/null | grep 'Signal level' | awk '{print $4}' | cut -d'=' -f2
+}
+
+# Get the WiFi signal strength
+wlan_signal_strength=$(get_signal_strength "wlan0") # Replace "wlan0" with your actual interface name
+%>
+
 </div>
 <div class="col col-2 col-md-2 col-lg-1">
 <% if is_recording; then %>
@@ -102,6 +113,17 @@ data-bs-toggle="tooltip" data-bs-title="Recording stopped">⏹</a>
 <div class="col col-12 col-md-7 col-lg-6 col-xl-5"><%= $(signature) %></div>
 <div class="col col-12 col-md-12 col-lg-3 col-xl-4 text-end"><a href="/x/config-time.cgi" id="time-now"
 class="link-underline link-underline-opacity-0 link-underline-opacity-75-hover"></a></div>
+</div>
+
+<!-- Display WiFi Signal Strength -->
+<div class="row my-2 x-small">
+<div class="col col-12 text-end">
+<% if [ -n "$wlan_signal_strength" ]; then %>
+<p class="mb-0">WiFi Signal Strength: <%= $wlan_signal_strength %> dBm</p>
+<% else %>
+<p class="mb-0">WiFi Signal Strength: Not available</p>
+<% fi %>
+</div>
 </div>
 
 <% if ! is_ap && [ -z "$network_gateway" ]; then %>
